@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE visualization SYSTEM "../../visualization.dtd">
+<visualization name="Plotly 3D scatter" embeddable="false">
+    <description>TBA.</description>
+    <data_sources>
+        <data_source>
+            <model_class>HistoryDatasetAssociation</model_class>
+            <test type="isinstance" test_attr="datatype" result_type="datatype">tabular.Tabular</test>
+            <test type="isinstance" test_attr="datatype" result_type="datatype">tabular.CSV</test>
+            <to_param param_attr="id">dataset_id</to_param>
+        </data_source>
+    </data_sources>
+    <params>
+        <param type="dataset" var_name_in_template="hda" required="true">dataset_id</param>
+    </params>
+    <entry_point entry_point_type="chart" src="script.js"/>
+    <settings>
+        <input>
+            <name>data_dialog</name>
+            <label>Some data selector</label>
+            <type>data_dialog</type>
+            <multiple>false</multiple>
+        </input>
+    </settings>
+    <groups>
+        <input>
+            <name>data_start</name>
+            <label>Data beginning column index</label>
+            <type>data_column</type>
+            <is_numeric>true</is_numeric>
+        </input>
+        <input>
+            <name>identifiers</name>
+            <label>Column for data identification</label>
+            <type>data_column</type>
+            <is_numeric>true</is_numeric>
+        </input>
+    </groups>
+</visualization>

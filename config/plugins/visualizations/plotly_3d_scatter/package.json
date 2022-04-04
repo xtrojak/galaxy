@@ -1,0 +1,15 @@
+{
+    "name": "plotly_3D_scatter",
+    "version": "0.1.0",
+    "keywords": [
+        "galaxy",
+        "visualization"
+    ],
+    "license": "AFL-3.0",
+    "dependencies": {
+        "@galaxyproject/charts": "^0.0.6"
+    },
+    "scripts": {
+        "build": "parcel build src/script.js -d static"
+    }
+}
