@@ -1,5 +1,5 @@
 {
-    "name": "plotly_3D_scatter",
+    "name": "visualization",
     "version": "0.1.0",
     "keywords": [
         "galaxy",
@@ -7,9 +7,14 @@
     ],
     "license": "AFL-3.0",
     "dependencies": {
-        "@galaxyproject/charts": "^0.0.6"
+        "@galaxyproject/charts": "^0.0.6",
+        "d3": "^4.12.2",
+        "parcel": "^2.0.0",
+        "underscore": "^1.8.3",
+        "plotly": "^1.0.6",
+        "pca-js": "^1.0.0"
     },
     "scripts": {
-        "build": "parcel build src/script.js -d static"
+        "build": "parcel build src/script.js --dist-dir static"
     }
 }
