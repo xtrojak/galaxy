@@ -34,7 +34,13 @@ firstpart = \
 
 function unpack(rows, key) {
 	return rows.map(function(row)
-	{ return row[key]; });}
+	    { return row[key]; }
+	  );
+	}
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
 
 var layout = {margin: {
 	l: 0,
@@ -53,29 +59,52 @@ var layout = {margin: {
 lastpart = \
 '''
 
+// variables to be given by select boxes
+var colour_column = 2;
 var data_start = 5;
 var data_end = data[0].length;
 
-var results = [];
+// actual data used for PCA computation
+var numeric_data = [];
 for(var i = 1; i < data.length; i++){
-  results.push(data[i].slice(data_start, data_end));
+  numeric_data.push(data[i].slice(data_start, data_end));
 }
 
-var vectors = PCA.getEigenVectors(results);
-var adData = PCA.computeAdjustedData(results,vectors[0],vectors[1],vectors[2])
+// PCA
+var vectors = PCA.getEigenVectors(numeric_data);
+var adData = PCA.computeAdjustedData(numeric_data,vectors[0],vectors[1],vectors[2])
 var pca_result = PCA.transpose(adData.adjustedData)
+
+// create colours of individual data points
+var colour_column = unpack(data, colour_column).slice(1, data.length)
+var unique = colour_column.filter(onlyUnique);
+var colours = [];
+for(var i = 0; i < colour_column.length; i++){
+  colours.push(unique.indexOf(colour_column[i]));
+}
+console.log(colours);
+
+// add metadata to hover text of individual data points
+var headers = data[0].slice(0, data_start-1);
+var annotations = [];
+for(var i = 1; i < data.length; i++){
+  var line  = data[i].slice(0,data_start-1);
+  var annotation = ''
+  for(var j = 0; j < headers.length; j++){
+    annotation += `<b>${headers[j]}</b>: ${line[j]}<br>`
+  }
+  annotations.push(annotation);
+}
 
 var trace = {
 	x:unpack(pca_result, 0), y: unpack(pca_result, 1), z: unpack(pca_result, 2),
 	mode: 'markers',
 	marker: {
 		size: 5,
-		line: {
-		color: 'rgba(217, 217, 217, 0.14)',
-		width: 0.5},
+		color: colours,
 		opacity: 0.8},
-	text: unpack(data, 0).slice(1, data.length),
-	hovertemplate: '<b>%{text}</b><br>' +
+	text: annotations,
+	hovertemplate: '%{text}' +
 	               '<br>PC 0: %{x:.5f}' +
                    '<br>PC 1: %{y:.5f}' +
                    '<br>PC 2: %{z:.5f}',
