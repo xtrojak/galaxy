@@ -10,8 +10,13 @@ def create_option(option, value, selected):
 
 def PCA_3D_Plot():
     html = first_part
+
     input = "\n".join(list(hda.datatype.dataprovider(hda, 'line', comment_char=none, provide_blank=True, strip_lines=False, strip_newlines=True)))
-    table = csv.reader(StringIO(input), delimiter='\t')
+    tabular_file = StringIO(input)
+    dialect = csv.Sniffer().sniff(tabular_file.read(1024), delimiters=";,\t")
+    tabular_file.seek(0)
+    table = csv.reader(tabular_file, dialect)
+
     html += "\tvar data = [\n"
     for i, row in enumerate(table):
         if i == 0:
@@ -55,7 +60,7 @@ first_part = \
 }
 </style>
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script><style id="plotly.js-style-global"></style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pca-js@1.0.0/pca.min.js"></script>
 
 <script type="text/javascript">
