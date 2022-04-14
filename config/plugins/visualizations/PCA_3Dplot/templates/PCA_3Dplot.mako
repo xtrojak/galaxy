@@ -64,6 +64,16 @@ first_part = \
 <script src="https://cdn.jsdelivr.net/npm/pca-js@1.0.0/pca.min.js"></script>
 
 <script type="text/javascript">
+'''
+
+second_part = \
+'''
+    var pca_result = [];
+    var colours = [];
+    var annotations = [];
+    var colour_column = 3;
+    var data_start = 5;
+
     function compute_pca(data, data_start) {
         // actual data used for PCA computation
         var numerical_data = filter_numerical_values(data, data_start, data[0].length);
@@ -72,9 +82,7 @@ first_part = \
         var adData = PCA.computeAdjustedData(numerical_data,vectors[0],vectors[1],vectors[2])
         return PCA.transpose(adData.adjustedData)
     }
-</script>
 
-<script type="text/javascript">
     function compute_colours(colour_column, data) {
         var colour_column = unpack(data, colour_column).slice(1, data.length)
         var unique = colour_column.filter(onlyUnique);
@@ -84,9 +92,7 @@ first_part = \
         }
         return colours
     }
-</script>
 
-<script type="text/javascript">
     function filter_numerical_values(data, data_start, data_end) {
         var numerical_data = [];
         for(var i = 1; i < data.length; i++){
@@ -94,9 +100,7 @@ first_part = \
         }
         return numerical_data
     }
-</script>
 
-<script type="text/javascript">
     function compute_annotations(data, data_start) {
         var headers = data[0].slice(0, data_start);
         var annotations = [];
@@ -110,23 +114,17 @@ first_part = \
         }
         return annotations
     }
-</script>
 
-<script type="text/javascript">
     function unpack(rows, key) {
         return rows.map(function(row)
             { return row[key]; }
       );
     }
-</script>
 
-<script type="text/javascript">
     function onlyUnique(value, index, self) {
         return self.indexOf(value) === index;
     }
-</script>
 
-<script type="text/javascript">
     function update_options() {
         var arr_options = [];
         if (colour_column >= data_start) {
@@ -144,17 +142,13 @@ first_part = \
         }
         document.getElementById("colour_column").innerHTML = arr_options;
     }
-</script>
 
-<script type="text/javascript">
     function colour_changed() {
         colour_column = document.getElementById("colour_column").value
         colours = compute_colours(colour_column, data);
         create_plot(pca_result, colours, annotations);
     }
-</script>
 
-<script type="text/javascript">
     function data_start_changed() {
         data_start = document.getElementById("data_start").value;
         update_options();
@@ -162,18 +156,6 @@ first_part = \
         pca_result = compute_pca(data, data_start);
         create_plot(pca_result, colours, annotations);
     }
-</script>
-
-<script type="text/javascript">
-'''
-
-second_part = \
-'''
-    var pca_result = [];
-    var colours = [];
-    var annotations = [];
-    var colour_column = 3;
-    var data_start = 5;
 
     function loadVisualisation() {
         // PCA
@@ -185,9 +167,7 @@ second_part = \
 
         create_plot(pca_result, colours, annotations);
     }
-</script>
 
-<script type="text/javascript">
     function create_plot(pca_result, colours, annotations) {
         var layout = {margin: {
             l: 0,
