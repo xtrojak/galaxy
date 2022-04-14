@@ -12,12 +12,13 @@ def PCA_3D_Plot():
     html = first_part
     input = "\n".join(list(hda.datatype.dataprovider(hda, 'line', comment_char=none, provide_blank=True, strip_lines=False, strip_newlines=True)))
     table = csv.reader(StringIO(input), delimiter='\t')
-    html += "\tvar data = ["
+    html += "\tvar data = [\n"
     for i, row in enumerate(table):
         if i == 0:
             header = row
         html += "\t\t\t" + str(row) + ",\n"
     html += "\t];\n"
+    html += "\tvar header = " + str(header) + ";\n"
     html += second_part
 
     default_colour = 3
@@ -30,7 +31,7 @@ def PCA_3D_Plot():
 
     html += third_part
 
-    for i in range(default_data_start, len(header) - 2):
+    for i in range(len(header) - 2):
         selected = False
         if i == default_data_start:
             selected = True
@@ -61,7 +62,6 @@ first_part = \
     function compute_pca(data, data_start) {
         // actual data used for PCA computation
         var numerical_data = filter_numerical_values(data, data_start, data[0].length);
-        console.log(numerical_data)
 
         var vectors = PCA.getEigenVectors(numerical_data);
         var adData = PCA.computeAdjustedData(numerical_data,vectors[0],vectors[1],vectors[2])
@@ -93,10 +93,10 @@ first_part = \
 
 <script type="text/javascript">
     function compute_annotations(data, data_start) {
-        var headers = data[0].slice(0, data_start-1);
+        var headers = data[0].slice(0, data_start);
         var annotations = [];
         for(var i = 1; i < data.length; i++){
-          var line  = data[i].slice(0,data_start-1);
+          var line  = data[i].slice(0, data_start);
           var annotation = ''
           for(var j = 0; j < headers.length; j++){
             annotation += `<b>${headers[j]}</b>: ${line[j]}<br>`
@@ -122,6 +122,26 @@ first_part = \
 </script>
 
 <script type="text/javascript">
+    function update_options() {
+        var arr_options = [];
+        if (colour_column >= data_start) {
+            colour_column = data_start - 1;
+            colours = compute_colours(colour_column, data);
+            create_plot(pca_result, colours, annotations);
+        }
+        for (var i=0; i < data_start; i++) {
+            if (colour_column == i) {
+                var selected = ' selected';
+            } else {
+                var selected = '';
+            }
+            arr_options.push("<option value='" + i + "'" + selected + ">" + header[i] + "</option>");
+        }
+        document.getElementById("colour_column").innerHTML = arr_options;
+    }
+</script>
+
+<script type="text/javascript">
     function colour_changed() {
         colour_column = document.getElementById("colour_column").value
         colours = compute_colours(colour_column, data);
@@ -132,9 +152,9 @@ first_part = \
 <script type="text/javascript">
     function data_start_changed() {
         data_start = document.getElementById("data_start").value;
-        console.log(data_start);
+        update_options();
+        annotations = compute_annotations(data, data_start);
         pca_result = compute_pca(data, data_start);
-        console.log(pca_result);
         create_plot(pca_result, colours, annotations);
     }
 </script>
@@ -144,11 +164,10 @@ first_part = \
 
 second_part = \
 '''
-
     var pca_result = [];
     var colours = [];
     var annotations = [];
-    var colour_column = 2;
+    var colour_column = 3;
     var data_start = 5;
 
     function loadVisualisation() {

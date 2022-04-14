@@ -15,27 +15,4 @@
         <param type="dataset" var_name_in_template="hda" required="true">dataset_id</param>
     </params>
     <entry_point entry_point_type="mako">PCA_3Dplot.mako</entry_point>
-<!--    <entry_point entry_point_type="chart" src="script.js"/>-->
-    <settings>
-        <input>
-            <name>data_dialog</name>
-            <label>Some data selector</label>
-            <type>data_dialog</type>
-            <multiple>false</multiple>
-        </input>
-    </settings>
-    <groups>
-        <input>
-            <name>data_start</name>
-            <label>Data beginning column index</label>
-            <type>data_column</type>
-            <is_numeric>true</is_numeric>
-        </input>
-        <input>
-            <name>identifiers</name>
-            <label>Column for data identification</label>
-            <type>data_column</type>
-            <is_numeric>true</is_numeric>
-        </input>
-    </groups>
 </visualization>
