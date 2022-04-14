@@ -71,7 +71,7 @@ second_part = \
     var pca_result = [];
     var colours = [];
     var annotations = [];
-    var colour_column = 3;
+    var colour_column = 2;
     var data_start = 5;
 
     function compute_pca(data, data_start) {
@@ -83,14 +83,8 @@ second_part = \
         return PCA.transpose(adData.adjustedData)
     }
 
-    function compute_colours(colour_column, data) {
-        var colour_column = unpack(data, colour_column).slice(1, data.length)
-        var unique = colour_column.filter(onlyUnique);
-        var colours = [];
-        for(var i = 0; i < colour_column.length; i++){
-          colours.push(unique.indexOf(colour_column[i]));
-        }
-        return colours
+    function get_colours(colour_column, data) {
+        return unpack(data, colour_column).slice(1, data.length)
     }
 
     function filter_numerical_values(data, data_start, data_end) {
@@ -129,7 +123,7 @@ second_part = \
         var arr_options = [];
         if (colour_column >= data_start) {
             colour_column = data_start - 1;
-            colours = compute_colours(colour_column, data);
+            colours = get_colours(colour_column, data);
             create_plot(pca_result, colours, annotations);
         }
         for (var i=0; i < data_start; i++) {
@@ -145,7 +139,7 @@ second_part = \
 
     function colour_changed() {
         colour_column = document.getElementById("colour_column").value
-        colours = compute_colours(colour_column, data);
+        colours = get_colours(colour_column, data);
         create_plot(pca_result, colours, annotations);
     }
 
@@ -161,42 +155,60 @@ second_part = \
         // PCA
         pca_result = compute_pca(data, data_start);
         // create colours of individual data pointse);
-        colours = compute_colours(colour_column, data);
+        colours = get_colours(colour_column, data);
         // add metadata to hover text of individual data points
         annotations = compute_annotations(data, data_start);
 
         create_plot(pca_result, colours, annotations);
     }
 
+    function filter_based_on_colour(data, colours, target_colour) {
+        var result = [];
+        for (var j = 0; j < colours.length; j++){
+            if (colours[j] == target_colour){
+                result.push(data[j])
+            }
+        }
+        return result
+    }
+
     function create_plot(pca_result, colours, annotations) {
-        var layout = {margin: {
-            l: 0,
-            r: 0,
-            b: 0,
-            t: 0
-          },
-          hoverlabel: { bgcolor: "#FFF" },
-          xaxis: {title: 'PC 0', zeroline: false},
-          yaxis: {title: 'PC 1', zeroline: false},
-          zaxis: {title: 'PC 2', zeroline: false}
+        var layout = {
+            hoverlabel: { bgcolor: "#FFF" },
+            scene: {
+                xaxis: {title: 'PC 0'},
+                yaxis: {title: 'PC 1'},
+                zaxis: {title: 'PC 2',}
+            }
         };
 
-        var trace = {
-            x:unpack(pca_result, 0), y: unpack(pca_result, 1), z: unpack(pca_result, 2),
-            mode: 'markers',
-            marker: {
-                size: 5,
-                color: colours,
-                opacity: 0.8},
-            text: annotations,
-            hovertemplate: '%{text}' +
-                           '<br>PC 0: %{x:.5f}' +
-                           '<br>PC 1: %{y:.5f}' +
-                           '<br>PC 2: %{z:.5f}',
-            type: 'scatter3d'
-        };
+        var data = [];
+        var unique_colours = colours.filter(onlyUnique);
 
-        var data = [trace];
+        for (var i = 0; i < unique_colours.length; i++){
+            var trace_data = filter_based_on_colour(pca_result, colours, unique_colours[i])
+            var trace_annotations = filter_based_on_colour(annotations, colours, unique_colours[i])
+
+            var trace = {
+                x:unpack(trace_data, 0), y: unpack(trace_data, 1), z: unpack(trace_data, 2),
+                mode: 'markers',
+                name: unique_colours[i],
+                marker: {
+                    size: 8,
+                    color: i,
+                    opacity: 0.8,
+                    colorscale: 'Jet'},
+                text: trace_annotations,
+                showlegend: true,
+                hovertemplate: '%{text}' +
+                               '<br>PC 0: %{x:.5f}' +
+                               '<br>PC 1: %{y:.5f}' +
+                               '<br>PC 2: %{z:.5f}' +
+                               '<extra></extra>',
+                type: 'scatter3d'
+            };
+            data.push(trace);
+        }
 
         var d3 = Plotly.d3;
         var WIDTH_IN_PERCENT_OF_PARENT = 100,
