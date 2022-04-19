@@ -55,18 +55,10 @@ colour_options, start_options = create_options(header)
 <html>
 <head>
 
-<style>
-.modebar-btn--logo {
-    display: none
-}
-#visualisation {
-    overflow: hidden;
-}
-</style>
-
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pca-js@1.0.0/pca.min.js"></script>
 ${h.javascript_link( app_root +  "script.js" )}
+${h.stylesheet_link( app_root + "style.css" )}
 
 <script type="text/javascript">
 var data = ${data}
@@ -75,16 +67,18 @@ var header = ${header}
 </head>
 
 <body>
-  <div id="combos">
-    <label for="colour_column">Colour column</label>
-    <select id="colour_column" onchange="colour_changed();">
-        '${colour_options}'
-    </select>
-    <label for="data_start">Data start column</label>
-    <select id="data_start" onchange="data_start_changed();">
-        '${start_options}'
-    </select>
-  </div>
-  <div id="visualisation"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <div id="wrapper">
+        <div id="combos">
+            <label for="colour_column">Colour column name</label>
+            <select class="minimal" id="colour_column" onchange="colour_changed();">
+                ${colour_options}
+            </select>
+            <label for="data_start">Data start column ID</label>
+            <select class="minimal" id="data_start" onchange="data_start_changed();">
+                ${start_options}
+            </select>
+        </div>
+        <div id="visualisation"><!-- Plotly chart will be drawn inside this DIV --></div>
+    </div>  
 </body>
 </html>

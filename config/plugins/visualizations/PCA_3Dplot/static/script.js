@@ -98,6 +98,12 @@ function create_plot(pca_result, colours, annotations) {
             xaxis: {title: 'PC 0'},
             yaxis: {title: 'PC 1'},
             zaxis: {title: 'PC 2',}
+        },
+        margin: {
+            l: 0,
+            r: 0,
+            b: 0,
+            t: 20,
         }
     };
 
@@ -130,15 +136,7 @@ function create_plot(pca_result, colours, annotations) {
     }
 
     var d3 = Plotly.d3;
-    var WIDTH_IN_PERCENT_OF_PARENT = 100,
-        HEIGHT_IN_PERCENT_OF_PARENT = 95;
-    var gd3 = d3.select("div[id='visualisation']")
-        .style({
-            width: WIDTH_IN_PERCENT_OF_PARENT + '%',
-            'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
-            height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
-            'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
-        });
+    var gd3 = d3.select("div[id='visualisation']");
     var res_graph = gd3.node();
     Plotly.newPlot(res_graph, data, layout);
     window.onresize = function() { Plotly.Plots.resize( res_graph ); };
