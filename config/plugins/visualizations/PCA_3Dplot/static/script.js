@@ -154,3 +154,5 @@ function load_visualisation() {
 
     create_plot(pca_result, colours, annotations);
 }
+
+document.addEventListener("DOMContentLoaded", load_visualisation);

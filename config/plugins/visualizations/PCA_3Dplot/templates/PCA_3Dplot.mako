@@ -74,7 +74,7 @@ var header = ${header}
 </script>
 </head>
 
-<body onload="load_visualisation()">
+<body>
   <div id="combos">
     <label for="colour_column">Colour column</label>
     <select id="colour_column" onchange="colour_changed();">
