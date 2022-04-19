@@ -5,48 +5,6 @@ import csv
 %>
 
 <%
-def create_option(option, value, selected):
-    return '\t\t<option value="{0}"{1}>{2}</option>\n'.format(value, " selected" if selected else "", option)
-
-def PCA_3D_Plot():
-    html = first_part
-
-    input = "\n".join(list(hda.datatype.dataprovider(hda, 'line', comment_char=none, provide_blank=True, strip_lines=False, strip_newlines=True)))
-    tabular_file = StringIO(input)
-    dialect = csv.Sniffer().sniff(tabular_file.read(1024), delimiters=";,\t")
-    tabular_file.seek(0)
-    table = csv.reader(tabular_file, dialect)
-
-    html += "\tvar data = [\n"
-    for i, row in enumerate(table):
-        if i == 0:
-            header = row
-        html += "\t\t\t" + str(row) + ",\n"
-    html += "\t];\n"
-    html += "\tvar header = " + str(header) + ";\n"
-    html += second_part
-
-    default_colour = 3
-    default_data_start = 5
-    for i in range(default_data_start):
-        selected = False
-        if i == default_colour:
-             selected = True
-        html += create_option(header[i], i, selected)
-
-    html += third_part
-
-    for i in range(len(header) - 2):
-        selected = False
-        if i == default_data_start:
-            selected = True
-        html += create_option(i, i, selected)
-
-    html += last_part
-
-    return html
-
-
 first_part = \
 '''
 <head>
@@ -247,7 +205,56 @@ last_part = \
   <div id="visualisation"><!-- Plotly chart will be drawn inside this DIV --></div>
 </body>
 '''
-plot = PCA_3D_Plot()
 
+def create_option(option, value, selected):
+    return '\t\t<option value="{0}"{1}>{2}</option>\n'.format(value, " selected" if selected else "", option)
+
+def create_options(header):
+    default_colour = 3
+    default_data_start = 5
+    colour_options = ""
+    for i in range(default_data_start):
+        selected = False
+        if i == default_colour:
+             selected = True
+        colour_options += create_option(header[i], i, selected)
+
+    start_options = ""
+    for i in range(len(header) - 2):
+        selected = False
+        if i == default_data_start:
+            selected = True
+        start_options += create_option(i, i, selected)
+
+    return colour_options, start_options
+
+def load_data():
+    input = "\n".join(list(hda.datatype.dataprovider(hda, 'line', comment_char=none, provide_blank=True, strip_lines=False, strip_newlines=True)))
+    tabular_file = StringIO(input)
+    dialect = csv.Sniffer().sniff(tabular_file.read(1024), delimiters=";,\t")
+    tabular_file.seek(0)
+    table = csv.reader(tabular_file, dialect)
+    data = "[\n"
+    for i, row in enumerate(table):
+        if i == 0:
+            header = row
+        data += "\t" + str(row) + ",\n"
+    data += "];\n"
+    return data, header
+
+def PCA_3D_Plot():
+    html = first_part
+    data, header = load_data()
+    html += "\tvar data =" + data
+    html += "\tvar header = " + str(header) + ";\n"
+    html += second_part
+    colour_options, start_options = create_options(header)
+    html += colour_options
+    html += third_part
+    html += start_options
+    html += last_part
+    return html
+
+plot = PCA_3D_Plot()
 %>
 ${plot}
