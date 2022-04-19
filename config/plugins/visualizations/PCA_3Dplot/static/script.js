@@ -147,7 +147,7 @@ function create_plot(pca_result, colours, annotations) {
 function load_visualisation() {
     // PCA
     pca_result = compute_pca(data, data_start);
-    // create colours of individual data pointse);
+    // create colours of individual data points
     colours = get_colours(colour_column, data);
     // add metadata to hover text of individual data points
     annotations = compute_annotations(data, data_start);
