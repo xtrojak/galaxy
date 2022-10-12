@@ -3809,10 +3809,9 @@ class Parquet(Binary):
                 pyarrow = None
                 log.debug('Dependency pyarrow not found, unable to generate peek for parquet file.')
             if pyarrow is not None:
-                log.debug(f"file_name: {dataset.file_name}")
                 try:
                     pf = ParquetFile(dataset.file_name)
-                    batch = next(pf.iter_batches(batch_size = 10))
+                    batch = next(pf.iter_batches(batch_size=10))
                     first_ten_rows = pyarrow.Table.from_batches([batch])
                     select_columns = 10 if first_ten_rows.num_columns > 10 else first_ten_rows.num_columns
                     first_ten_columns = first_ten_rows.select([x for x in range(0, select_columns)])
@@ -3854,35 +3853,38 @@ class Parquet(Binary):
             log.debug('Dependency pyarrow not found, unable to generate preview for parquet file.')
         if pyarrow is not None:
             try:
+                headers = kwd.get("headers", {})
                 pf = ParquetFile(dataset.file_name)
                 batch = next(pf.iter_batches(batch_size = NUM_ROWS))
                 chosen_rows = pyarrow.Table.from_batches([batch])
                 max_columns = NUM_COLS if chosen_rows.num_columns > NUM_COLS else chosen_rows.num_columns
                 chosen_columns = chosen_rows.select([x for x in range(0, max_columns)])
                 truncated_data = chosen_columns.to_pandas().to_string()
-                return trans.fill_template_mako("/dataset/large_file.mako", truncated_data=truncated_data, data=dataset)
+                headers["content-type"] = "text/html"
+                return (
+                    trans.fill_template_mako(
+                        "/dataset/large_file.mako",
+                        truncated_data=truncated_data,
+                        data=dataset,
+                    ),
+                    headers
+                )
             except Exception as e:
                 return super().display_data(
                 trans,
-                dataset=dataset,
+                data=dataset,
                 preview=preview,
                 filename=filename,
                 to_ext=to_ext,
-                size=size,
-                offset=offset,
-                headers=headers,
                 **kwd
             )
         else:
             return super().display_data(
                 trans,
-                dataset=dataset,
+                data=dataset,
                 preview=preview,
                 filename=filename,
                 to_ext=to_ext,
-                size=size,
-                offset=offset,
-                headers=headers,
                 **kwd
             )
 
